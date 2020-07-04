@@ -14,3 +14,8 @@
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::name('mail_form.')->group(function () {
+    Route::post('/register', 'MailFormController@register')->name('register');
+    Route::get('/complete', 'MailFormController@complete')->name('complete');
+});
