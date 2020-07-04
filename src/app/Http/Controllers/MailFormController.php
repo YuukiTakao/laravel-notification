@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\User;
 use Hash;
+use Mail;
 
 class MailFormController extends Controller
 {
@@ -22,8 +23,8 @@ class MailFormController extends Controller
             'name'     => $request->user_name,
             'password' => Hash::make($request->user_password),
         ]);
-        
-        // sent mail
+
+        $this->sendEmailByFacade($user);
         // slack notification
         // Queueing
         
@@ -40,5 +41,23 @@ class MailFormController extends Controller
     public function complete(Request $request)
     {
         return view('complete');
+    }
+
+    /**
+     * Send an email using a facade
+     * 
+     * @param  User $user 
+     * @return void
+     */
+    private function sendEmailByFacade(User $user): void 
+    {
+        $data = [
+            'name' => $user->name
+        ];
+        // sent mail
+        Mail::send('emails.test', $data, function($message) use ($user) {
+            $message->to($user->email, 'Test')
+                ->subject('This is a test mail');
+        });
     }
 }
