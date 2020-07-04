@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\User;
+use Hash;
 
 class MailFormController extends Controller
 {
@@ -12,14 +14,19 @@ class MailFormController extends Controller
      * @param  Request  $request
      * @return Success
      */
-    public function register(RegisterRequest $request)
+    public function register(Request $request)
     {
-        // トランザクション
-        // DB登録
-        // キューイング
-        // メール送信
-        // Slack通知
-
+        $user = User::create([
+            'id'       => User::all()->count() + 1,
+            'email'    => $request->user_email,
+            'name'     => $request->user_name,
+            'password' => Hash::make($request->user_password),
+        ]);
+        
+        // sent mail
+        // slack notification
+        // Queueing
+        
         return redirect()->route('mail_form.complete')
             ->with('status', 'Congratulations! Test registration is complete!');
     }
@@ -32,6 +39,6 @@ class MailFormController extends Controller
      */
     public function complete(Request $request)
     {
-        return view('mail_form.complete');
+        return view('complete');
     }
 }
